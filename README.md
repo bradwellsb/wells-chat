@@ -1,10 +1,6 @@
-<p align="center">
-  <img src="https://github.com/cohoist/cohoist-chat/assets/8410696/f588a09b-7a70-4a54-b440-c17f3083cc69"/>
-</p>
+# Wells Chat
 
-# Cohoist Chat
-
-Cohoist Chat is an end-to-end encrypted chat application built using **.NET 8** and **SignalR**. This project contains two independent applications: 
+Wells Chat is an end-to-end encrypted chat application built using **.NET 8** and **SignalR**. This project contains two independent applications: 
 - A console application
 - A MAUI application
 
@@ -46,7 +42,3 @@ This open-source project demonstrates the capabilities of **.NET 8**, **MAUI**, 
 ### Privacy Features
 ![cohoist-chat-screenshot-2](https://github.com/cohoist/cohoist-chat/assets/8410696/e602099a-7ec9-463e-b29b-a5cedb957cd9)
 ![cohoist-chat-screenshot-4](https://github.com/cohoist/cohoist-chat/assets/8410696/5dd216f0-a5f7-4151-8829-ab33346b3a4a)
-
----
-
-<sub>This application was originally developed by [@bradwellsb](https://github.com/bradwellsb), who graciously transferred ownership of the repository to Cohoist in 2023.</sub>
