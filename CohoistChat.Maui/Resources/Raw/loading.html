@@ -1,0 +1,158 @@
+﻿<html>
+	<head>
+		<style>
+            body {
+                background-color: var(--background-color); /* Set in JS based on system theme */
+            }
+			/* For Loading Animation*/
+
+			.loading-wrapper {
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				height: 100%;
+				width: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+			}
+
+            .circle {
+                background-color: var(--foreground-color);
+                border-radius: 50%;
+                height: 20px; /* Adjusted size */
+                width: 20px; /* Adjusted size */
+                position: absolute;
+                transform: translateY(-50%);
+                box-shadow: 0 0 0 2px var(--background-color), 0 0 0 6px var(--foreground-color);
+            }
+
+				.circle:nth-child(1) {
+					left: calc(50% - 60px); /* Adjusted position */
+					top: calc(50% + 30px); /* Adjusted position */
+				}
+
+				.circle:nth-child(2) {
+					left: calc(50% - 20px); /* Adjusted position */
+					top: calc(50% - 30px); /* Adjusted position */
+				}
+
+				.circle:nth-child(3) {
+					left: calc(50% + 20px); /* Adjusted position */
+					top: calc(50% + 30px); /* Adjusted position */
+				}
+
+				.circle:nth-child(4) {
+					left: calc(50% + 60px); /* Adjusted position */
+					top: calc(50% - 30px); /* Adjusted position */
+				}
+
+			@keyframes pulley1and3 {
+				0%, 100% {
+					transform: translateY(-50%);
+				}
+
+				50% {
+					transform: translateY(calc(-50% - 60px));
+				}
+			}
+
+			@keyframes pulley2and4 {
+				0%, 100% {
+					transform: translateY(-50%);
+				}
+
+				50% {
+					transform: translateY(calc(-50% + 60px));
+				}
+			}
+
+			@media (min-width: 768px) {
+                .circle {
+                    background-color: var(--foreground-color);
+                    border-radius: 50%;
+                    height: 50px;
+                    width: 50px;
+                    position: absolute;
+                    transform: translateY(-50%);
+                    box-shadow: 0 0 0 5px var(--background-color), 0 0 0 15px var(--foreground-color);
+                }
+
+					.circle:nth-child(1) {
+						left: calc(50% - 150px);
+						top: calc(50% + 75px);
+					}
+
+					.circle:nth-child(2) {
+						left: calc(50% - 50px);
+						top: calc(50% - 75px);
+					}
+
+					.circle:nth-child(3) {
+						left: calc(50% + 50px);
+						top: calc(50% + 75px);
+					}
+
+					.circle:nth-child(4) {
+						left: calc(50% + 150px);
+						top: calc(50% - 75px);
+					}
+
+				@keyframes pulley1and3 {
+					0%, 100% {
+						transform: translateY(-50%);
+					}
+
+					50% {
+						transform: translateY(calc(-50% - 150px));
+					}
+				}
+
+				@keyframes pulley2and4 {
+					0%, 100% {
+						transform: translateY(-50%);
+					}
+
+					50% {
+						transform: translateY(calc(-50% + 150px));
+					}
+				}
+			}
+
+			.circle:nth-child(1), .circle:nth-child(3) {
+				animation: pulley1and3 2s infinite;
+			}
+
+			.circle:nth-child(2), .circle:nth-child(4) {
+				animation: pulley2and4 2s infinite;
+			}
+		</style>
+		<script>
+			// Define function to set bg and fg colors based on system theme
+			function setBackgroundColor() {
+				var backgroundColor;
+				var foregroundColor;
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					backgroundColor = '#00608f'; 
+					foregroundColor = '#ffffff'; 
+				} else {
+                    backgroundColor = '#ffffff';
+                    foregroundColor = '#00608f'; 
+				}
+                // Assign the colors to CSS variables
+				document.documentElement.style.setProperty('--background-color', backgroundColor);
+                document.documentElement.style.setProperty('--foreground-color', foregroundColor);
+			}
+			// Call the function on page load
+			window.onload = setBackgroundColor;
+		</script>
+	</head>
+	<body>
+		<div class="loading-wrapper">
+			<div class="circle"></div>
+			<div class="circle"></div>
+			<div class="circle"></div>
+			<div class="circle"></div>
+		</div>
+	</body>
+</html>
