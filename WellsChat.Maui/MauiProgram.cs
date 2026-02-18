@@ -31,6 +31,7 @@ namespace WellsChat.Maui
                 platform.OpenUrl((app, url, options) =>
                 {
                     AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(url);
+                    return true;
                 });
             });
 #endif
@@ -47,10 +48,6 @@ namespace WellsChat.Maui
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"{typeof(App).Namespace}.appsettings.json");
             var config = new ConfigurationBuilder().AddJsonStream(stream).Build();
             builder.Configuration.AddConfiguration(config);
-
-#if DEBUG
-		builder.Logging.AddDebug();
-#endif
 
             return builder.Build();
         }

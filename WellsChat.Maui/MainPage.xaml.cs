@@ -15,8 +15,10 @@ namespace WellsChat.Maui
         public ObservableCollection<Message> Messages { get; init; }
         private StatusEnum _status;
         private string _statusText;
+        private bool _isMultiline;
         public StatusEnum Status { get => _status; set { _status = value; OnPropertyChanged(nameof(Status)); } }
         public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChanged(nameof(StatusText)); } }
+        public bool IsMultiline { get => _isMultiline; set { _isMultiline = value; OnPropertyChanged(nameof(IsMultiline)); } }
         public Command<string> CopyCommand { get; init; }
         public ChatViewModel()
         {
@@ -103,6 +105,14 @@ namespace WellsChat.Maui
         {
             await SendMessage();                     
         }
+
+        private void checkBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+        {
+            if (e.Value)
+            {
+                MessageEditor.Text = MessageEntry.Text;
+            }
+        }
         private async void ReconnectButton_Clicked(object sender, EventArgs e)
         {
             if (hubConnection.State != HubConnectionState.Disconnected) return;
@@ -154,6 +164,15 @@ namespace WellsChat.Maui
                 .WithIosKeychainSecurityGroup("com.microsoft.adalcache")
                 .WithTenantId(Task.Run(async () => await _dataService.GetSecretAsync("TenantId")).Result)
                 .Build();
+#elif WINDOWS
+            return PublicClientApplicationBuilder.Create(Task.Run(async () => await _dataService.GetSecretAsync("ClientId")).Result)
+                .WithRedirectUri("https://login.microsoftonline.com/common/oauth2/nativeclient")
+                .WithAuthority(AadAuthorityAudience.AzureAdMyOrg)
+                .WithTenantId(Task.Run(async () => await _dataService.GetSecretAsync("TenantId")).Result)
+                .WithParentActivityOrWindow(() => WinRT.Interop.WindowNative.GetWindowHandle(
+                    Application.Current.Windows[0].Handler.PlatformView))
+                .WithRedirectUri("http://localhost")
+                .Build();
 #else
             return PublicClientApplicationBuilder.Create(Task.Run(async () => await _dataService.GetSecretAsync("ClientId")).Result)
                 .WithRedirectUri("https://login.microsoftonline.com/common/oauth2/nativeclient")
@@ -184,7 +203,8 @@ namespace WellsChat.Maui
             {
                 try
                 {
-                    result = await app.AcquireTokenInteractive(scopes).ExecuteAsync();
+                    result = await MainThread.InvokeOnMainThreadAsync(
+                        async () => await app.AcquireTokenInteractive(scopes).ExecuteAsync());
                 }
                 catch (MsalServiceException e)
                 {

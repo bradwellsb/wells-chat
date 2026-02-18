@@ -76,10 +76,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <HorizontalStackLayout Grid.Row="1" Grid.Column="0">
-                <CheckBox x:Name="checkBox" />
+                <CheckBox x:Name="checkBox" IsChecked="{Binding IsMultiline, Mode=TwoWay}" CheckedChanged="checkBox_CheckedChanged" />
                 <Label Text="Multiline" VerticalTextAlignment="Center">
                     <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}" Value="true">
+                        <DataTrigger TargetType="Label" Binding="{Binding IsMultiline}" Value="True">
                             <Setter Property="FontAttributes" Value="Italic, Bold" />
                         </DataTrigger>
                     </Label.Triggers>
@@ -90,21 +90,20 @@
         <StackLayout Grid.Row="3" Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="20,0,20,20">
             <Editor x:Name="MessageEditor" Placeholder="Enter your message" MinimumHeightRequest="120" AutoSize="TextChanges" HorizontalOptions="FillAndExpand" Margin="0,0,8,0">
                 <Editor.Triggers>
-                    <DataTrigger TargetType="Editor" Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}" Value="true">
+                    <DataTrigger TargetType="Editor" Binding="{Binding IsMultiline}" Value="True">
                         <Setter Property="IsVisible" Value="True" />
-                        <Setter Property="Text" Value="{Binding Source={x:Reference MessageEntry},Path=Text}" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Editor" Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}" Value="False">
+                    <DataTrigger TargetType="Editor" Binding="{Binding IsMultiline}" Value="False">
                         <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                 </Editor.Triggers>
             </Editor>
             <Entry x:Name="MessageEntry" Placeholder="Enter your message" HorizontalOptions="FillAndExpand" Margin="0,0,8,0">
                 <Entry.Triggers>
-                    <DataTrigger TargetType="Entry" Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}" Value="true">
+                    <DataTrigger TargetType="Entry" Binding="{Binding IsMultiline}" Value="True">
                         <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Entry" Binding="{Binding Source={x:Reference checkBox}, Path=IsChecked}" Value="False">
+                    <DataTrigger TargetType="Entry" Binding="{Binding IsMultiline}" Value="False">
                         <Setter Property="IsVisible" Value="True" />
                     </DataTrigger>
                 </Entry.Triggers>
