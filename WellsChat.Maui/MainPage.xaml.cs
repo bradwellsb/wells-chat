@@ -22,14 +22,17 @@ namespace WellsChat.Maui
         public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChanged(nameof(StatusText)); } }
         private bool _isMultiline = false;
         public bool IsMultiline { get => _isMultiline; set { _isMultiline = value; OnPropertyChanged(nameof(IsMultiline)); } }
+        private Message _selectedMessage;
+        public Message SelectedMessage { get => _selectedMessage; set { _selectedMessage = value; OnPropertyChanged(nameof(SelectedMessage)); } }
         public Command<string> CopyCommand { get; init; }
         public Command<string> CopyUrlCommand { get; init; }
         public ChatViewModel()
         {
             Messages = new ObservableCollection<Message>();
-            CopyCommand = new Command<string>(async (string text) => await Clipboard.Default.SetTextAsync(text));
+            CopyCommand = new Command<string>(async (string text) => { if (!string.IsNullOrEmpty(text)) await Clipboard.Default.SetTextAsync(text); });
             CopyUrlCommand = new Command<string>(async (string text) =>
             {
+                if (string.IsNullOrEmpty(text)) return;
                 string url = Regex.Match(text, @"(https?://[^\s]+)").Value;
                 if (string.IsNullOrEmpty(url)) return;
                 await Clipboard.Default.SetTextAsync(url);
@@ -545,6 +548,34 @@ namespace WellsChat.Maui
             await toast.Show(cancellationTokenSource.Token);
             */
         }
+#if WINDOWS
+        protected override void OnHandlerChanged()
+        {
+            base.OnHandlerChanged();
+            if (Handler?.PlatformView is Microsoft.UI.Xaml.UIElement nativeElement)
+            {
+                nativeElement.PreviewKeyDown += OnNativePreviewKeyDown;
+            }
+        }
+
+        private void OnNativePreviewKeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+        {
+            if (MessageEntry.IsFocused || MessageEditor.IsFocused) return;
+            if (vm.SelectedMessage == null) return;
+
+            var ctrlState = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control);
+            if (!ctrlState.HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)) return;
+            if (e.Key != Windows.System.VirtualKey.C) return;
+
+            var shiftState = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift);
+            if (shiftState.HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
+                vm.CopyUrlCommand.Execute(vm.SelectedMessage.Payload);
+            else
+                vm.CopyCommand.Execute(vm.SelectedMessage.Payload);
+
+            e.Handled = true;
+        }
+#endif
         private void OnMultilineToggled(object sender, EventArgs e)
         {
             vm.IsMultiline = !vm.IsMultiline;

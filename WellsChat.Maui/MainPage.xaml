@@ -85,6 +85,8 @@
                            ItemsSource="{Binding Messages}"
                            AutoFitMode="Height"
                            AllowSwiping="True"
+                           SelectionMode="SingleDeselect"
+                           SelectedItem="{Binding SelectedMessage, Mode=TwoWay}"
                            ItemSpacing="2"
                            Margin="0">
                 <sf:SfListView.EndSwipeTemplate>
@@ -183,6 +185,12 @@
                                     <Border.Shadow>
                                         <Shadow Brush="#18000000" Offset="0,1" Radius="4" />
                                     </Border.Shadow>
+                                    <FlyoutBase.ContextFlyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem Text="Copy" Command="{Binding CopyCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}" />
+                                            <MenuFlyoutItem Text="Copy URL" Command="{Binding CopyUrlCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}" IsEnabled="{Binding ContainsUrl}" />
+                                        </MenuFlyout>
+                                    </FlyoutBase.ContextFlyout>
                                     <VerticalStackLayout Spacing="4">
                                         <Label Text="{Binding Payload}"
                                                LineBreakMode="WordWrap"
@@ -193,20 +201,6 @@
                                                     <Setter Property="TextColor" Value="{StaticResource ChatBubbleTextMe}" />
                                                 </DataTrigger>
                                             </Label.Triggers>
-                                            <FlyoutBase.ContextFlyout>
-                                                <MenuFlyout>
-                                                    <MenuFlyoutItem Text="Copy" Command="{Binding CopyCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}">
-                                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                                            <KeyboardAccelerator Modifiers="Ctrl" Key="C" />
-                                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                                    </MenuFlyoutItem>
-                                                    <MenuFlyoutItem Text="Copy URL" Command="{Binding CopyUrlCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}" IsEnabled="{Binding ContainsUrl}">
-                                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                                            <KeyboardAccelerator Modifiers="Ctrl,Shift" Key="C" />
-                                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                                    </MenuFlyoutItem>
-                                                </MenuFlyout>
-                                            </FlyoutBase.ContextFlyout>
                                         </Label>
                                         <Label Text="{Binding TimeReceived, StringFormat='{0:t}'}"
                                                FontSize="10"
