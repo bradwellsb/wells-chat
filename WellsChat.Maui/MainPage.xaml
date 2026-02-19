@@ -83,8 +83,7 @@
                            ItemsSource="{Binding Messages}"
                            AutoFitMode="Height"
                            AllowSwiping="True"
-                           SelectionMode="SingleDeselect"                           
-                           SelectedItem="{Binding SelectedMessage, Mode=TwoWay}"
+                           SelectionMode="None"
                            ItemSpacing="2"
                            Margin="0">
                 <sf:SfListView.EndSwipeTemplate>
@@ -104,7 +103,7 @@
                         </Grid>
                     </DataTemplate>
                 </sf:SfListView.EndSwipeTemplate>
-
+                
                 <sf:SfListView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="16,3">
