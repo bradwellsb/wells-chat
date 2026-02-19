@@ -4,8 +4,8 @@
              xmlns:local="clr-namespace:WellsChat.Maui"
              xmlns:shared="clr-namespace:WellsChat.Shared;assembly=WellsChat.Shared"
              xmlns:sf="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
-             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
-             x:Class="WellsChat.Maui.MainPage">
+             x:Class="WellsChat.Maui.MainPage"
+             SafeAreaEdges="All">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="🔒" Clicked="OnPrivateClicked" AutomationId="Private" />
@@ -79,13 +79,11 @@
 
         <!-- Row 1: Messages area with loading overlay -->
         <Grid Grid.Row="1">
-            <syncfusion:SfPopup/>
-
             <sf:SfListView x:Name="MessagesList"
                            ItemsSource="{Binding Messages}"
                            AutoFitMode="Height"
                            AllowSwiping="True"
-                           SelectionMode="SingleDeselect"
+                           SelectionMode="SingleDeselect"                           
                            SelectedItem="{Binding SelectedMessage, Mode=TwoWay}"
                            ItemSpacing="2"
                            Margin="0">
