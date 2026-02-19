@@ -362,5 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-/CohoistChat.ClientConsole/appsettings.json
-/CohoistChat.Maui/appsettings.json
+/WellsChat.ClientConsole/appsettings.json
+/WellsChat.Maui/appsettings.json

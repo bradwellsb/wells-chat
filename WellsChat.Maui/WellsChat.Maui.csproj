@@ -12,10 +12,10 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 
 		<!-- Display name -->
-		<ApplicationTitle>Wells Chat</ApplicationTitle>
+		<ApplicationTitle>Cohoist Chat</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.wellsb.chat</ApplicationId>
+		<ApplicationId>com.cohoist.chat</ApplicationId>
 		<ApplicationIdGuid>6d815db9-5e5f-42d5-b05c-8ecdeb11ba90</ApplicationIdGuid>
 
 		<!-- Versions -->
@@ -63,7 +63,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.40" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
 		<PackageReference Include="Azure.Identity" Version="1.17.1" />
 		<PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.3" />
@@ -73,6 +74,7 @@
 		<PackageReference Include="Microsoft.Identity.Client.Extensions.Msal" Version="4.82.1" />
 		<PackageReference Include="Syncfusion.Maui.Core" Version="32.1.19" />
 		<PackageReference Include="Syncfusion.Maui.ListView" Version="32.1.19" />
+		<PackageReference Include="Syncfusion.Maui.Popup" Version="32.1.19" />
 	</ItemGroup>
 
 	<ItemGroup>
