@@ -3,171 +3,367 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:WellsChat.Maui"
              xmlns:shared="clr-namespace:WellsChat.Shared;assembly=WellsChat.Shared"
-             xmlns:sys="clr-namespace:System;assembly=netstandard"
              xmlns:sf="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              x:Class="WellsChat.Maui.MainPage">
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="🔒" Clicked="OnPrivateClicked" AutomationId="Private" />
         <ToolbarItem Text="Clear" Clicked="OnClearClicked" AutomationId="Clear" />
         <ToolbarItem Text="Users" Clicked="OnUsersClicked"/>
     </ContentPage.ToolbarItems>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <WebView Source="loading.html" IsVisible="False" ZIndex="999">
-            <WebView.Triggers>
-                <DataTrigger TargetType="WebView" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connecting}">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+
+        <!-- Row 0: Connection status banner (hidden when connected) -->
+        <Border Grid.Row="0"
+                Padding="10,8"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light=#FFF3CD, Dark=#664D03}"
+                IsVisible="False">
+            <Border.Triggers>
+                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connecting}">
                     <Setter Property="IsVisible" Value="True" />
                 </DataTrigger>
-            </WebView.Triggers>
-        </WebView>
-        <syncfusion:SfPopup/>
-        <sf:SfListView Grid.Row="0" x:Name="MessagesList" ItemsSource="{Binding Messages}" AutoFitMode="Height" Margin="20,0" AllowSwiping="True" >
-            <sf:SfListView.EndSwipeTemplate>
-                <DataTemplate x:Name="EndSwipeTemplate">
-                    <Grid>
-                        <Grid BackgroundColor="Red" HorizontalOptions="Fill" VerticalOptions="Fill" Grid.Column="0">
-                            <Grid VerticalOptions="Center" HorizontalOptions="Center">
-                                <Image 
-                                    BackgroundColor="Transparent"
-                                    HeightRequest="24"
-                                    WidthRequest="24"
-                                    Source="delete.png">
-                                    <Image.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="DeleteMessage"/>
-                                    </Image.GestureRecognizers>
-                                </Image>
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </DataTemplate>
-            </sf:SfListView.EndSwipeTemplate>
-            <sf:SfListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <VerticalStackLayout Grid.Column="0">
-                            <VerticalStackLayout.Triggers>
-                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Info}">
-                                    <Setter Property="BackgroundColor" Value="{x:Null}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Connected}">
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightCyan}, Dark={StaticResource DarkCyan}}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Disconnected}">
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightGray}, Dark={StaticResource DarkGray}}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Me}">
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightGreen}, Dark={StaticResource DarkGreen}}" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.NotMe}">
-                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource LightBlue}, Dark={StaticResource DarkBlue}}" />
-                                </DataTrigger>
-                            </VerticalStackLayout.Triggers>
-                            <Label Text="{Binding SenderDisplayName, StringFormat='{0}:'}" Margin="8,0" HorizontalOptions="End" FontAttributes="Bold"/>
-                            <Label BindingContext="{Binding TimeReceived, Mode=OneWay}" Text="{Binding StringFormat='{0:g}'}" Margin="8,0" HorizontalOptions="End" FontSize="12"/>
-                        </VerticalStackLayout>
-                        <Label Grid.Column="1" Text="{Binding Payload}" Margin="8,0" VerticalTextAlignment="Center" LineBreakMode="WordWrap">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.NotMe}">
-                                    <Setter Property="ToolTipProperties.Text" Value="{Binding TimeSent, StringFormat='Sent: {0:G}', Mode=OneWay}" />
-                                </DataTrigger>
-                            </Label.Triggers>
-                            <FlyoutBase.ContextFlyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem Text="Copy" Command="{Binding CopyCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Modifiers="Ctrl" Key="C" />
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="Copy URL" Command="{Binding CopyUrlCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}" IsEnabled="{Binding ContainsUrl}">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Modifiers="Ctrl,Shift" Key="C" />
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
-                                </MenuFlyout>
-                            </FlyoutBase.ContextFlyout>
-                        </Label>
-                    </Grid>
-                </DataTemplate>
-            </sf:SfListView.ItemTemplate>
-        </sf:SfListView>
-        <Button Grid.Row="1" Text="Reconnect" Clicked="ReconnectButton_Clicked" Margin="20,-40,20,0"  HorizontalOptions="End" >
-            <Button.Style>
-                <Style TargetType="Button">
-                    <Setter Property="IsVisible" Value="False" />
-                    <Setter Property="IsEnabled" Value="False" />
-                    <Style.Triggers>
-                        <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Disconnected}">
-                            <Setter Property="IsEnabled" Value="True" />
+                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Reconnecting}">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+                <DataTrigger TargetType="Border" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Disconnected}">
+                    <Setter Property="IsVisible" Value="True" />
+                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F8D7DA, Dark=#58151C}" />
+                </DataTrigger>
+            </Border.Triggers>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                <ActivityIndicator IsRunning="True"
+                                   HeightRequest="16" WidthRequest="16"
+                                   Color="{AppThemeBinding Light=#856404, Dark=#FFDA6A}"
+                                   IsVisible="False">
+                    <ActivityIndicator.Triggers>
+                        <DataTrigger TargetType="ActivityIndicator" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connecting}">
                             <Setter Property="IsVisible" Value="True" />
                         </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-        </Button>
-        <Grid Grid.Row="2" Margin="20,-10,20,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <HorizontalStackLayout Grid.Row="1" Grid.Column="0">
-                <CheckBox x:Name="checkBox" />
-                <Label Text="Multiline" VerticalTextAlignment="Center">
+                        <DataTrigger TargetType="ActivityIndicator" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Reconnecting}">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                    </ActivityIndicator.Triggers>
+                </ActivityIndicator>
+                <Label Text="{Binding StatusText}"
+                       FontSize="13"
+                       VerticalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light=#856404, Dark=#FFDA6A}">
                     <Label.Triggers>
-                        <DataTrigger TargetType="Label" Binding="{Binding IsChecked, Source={x:Reference checkBox}}" Value="true">
-                            <Setter Property="FontAttributes" Value="Italic, Bold" />
+                        <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Disconnected}">
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light=#842029, Dark=#EA868F}" />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>
+                <Button Text="Reconnect"
+                        Clicked="ReconnectButton_Clicked"
+                        FontSize="12"
+                        Padding="14,4"
+                        CornerRadius="14"
+                        HeightRequest="30"
+                        MinimumHeightRequest="30"
+                        IsVisible="False"
+                        BackgroundColor="{AppThemeBinding Light=#842029, Dark=#B02A37}"
+                        TextColor="White">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Disconnected}">
+                            <Setter Property="IsVisible" Value="True" />
+                            <Setter Property="IsEnabled" Value="True" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
             </HorizontalStackLayout>
-            <Label Grid.Column="1" Text="{Binding StatusText}" FontSize="14" VerticalOptions="End" HorizontalTextAlignment="End" LineBreakMode="WordWrap" />
+        </Border>
+
+        <!-- Row 1: Messages area with loading overlay -->
+        <Grid Grid.Row="1">
+            <syncfusion:SfPopup/>
+
+            <sf:SfListView x:Name="MessagesList"
+                           ItemsSource="{Binding Messages}"
+                           AutoFitMode="Height"
+                           AllowSwiping="True"
+                           ItemSpacing="2"
+                           Margin="0">
+                <sf:SfListView.EndSwipeTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid BackgroundColor="#E53935" HorizontalOptions="Fill" VerticalOptions="Fill">
+                                <Grid VerticalOptions="Center" HorizontalOptions="Center">
+                                    <Image BackgroundColor="Transparent"
+                                           HeightRequest="24" WidthRequest="24"
+                                           Source="delete.png">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="DeleteMessage"/>
+                                        </Image.GestureRecognizers>
+                                    </Image>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </sf:SfListView.EndSwipeTemplate>
+
+                <sf:SfListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="16,3">
+
+                            <!-- System / Info messages (centered pill) -->
+                            <Border IsVisible="False"
+                                    HorizontalOptions="Center"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource ChatInfoBg}, Dark={StaticResource ChatInfoBgDark}}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Stroke="Transparent"
+                                    Padding="16,6"
+                                    Margin="40,2">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Info}">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Connected}">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Disconnected}">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label Text="{Binding Payload}"
+                                       FontSize="12"
+                                       HorizontalTextAlignment="Center"
+                                       TextColor="{StaticResource ChatInfoText}"
+                                       LineBreakMode="WordWrap" />
+                            </Border>
+
+                            <!-- Chat bubble wrapper (Me / NotMe) -->
+                            <VerticalStackLayout HorizontalOptions="Start"
+                                                 MaximumWidthRequest="480"
+                                                 Spacing="2"
+                                                 IsVisible="True">
+                                <VerticalStackLayout.Triggers>
+                                    <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Me}">
+                                        <Setter Property="HorizontalOptions" Value="End" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Info}">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Connected}">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Disconnected}">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                </VerticalStackLayout.Triggers>
+
+                                <!-- Sender name (visible only for NotMe) -->
+                                <Label Text="{Binding SenderDisplayName}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary}"
+                                       Margin="14,0,14,0"
+                                       IsVisible="False">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.NotMe}">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <!-- The bubble -->
+                                <Border Padding="12,8"
+                                        StrokeShape="RoundRectangle 18,18,18,4"
+                                        Stroke="Transparent"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource ChatBubbleOther}, Dark={StaticResource ChatBubbleOtherDark}}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Me}">
+                                            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource ChatBubbleMe}, Dark={StaticResource ChatBubbleMeDark}}" />
+                                            <Setter Property="StrokeShape" Value="RoundRectangle 18,18,4,18" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.Shadow>
+                                        <Shadow Brush="#18000000" Offset="0,1" Radius="4" />
+                                    </Border.Shadow>
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label Text="{Binding Payload}"
+                                               LineBreakMode="WordWrap"
+                                               FontSize="14"
+                                               TextColor="{AppThemeBinding Light={StaticResource ChatBubbleTextOther}, Dark={StaticResource ChatBubbleTextOtherDark}}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Me}">
+                                                    <Setter Property="TextColor" Value="{StaticResource ChatBubbleTextMe}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                            <FlyoutBase.ContextFlyout>
+                                                <MenuFlyout>
+                                                    <MenuFlyoutItem Text="Copy" Command="{Binding CopyCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}">
+                                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                                            <KeyboardAccelerator Modifiers="Ctrl" Key="C" />
+                                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                                    </MenuFlyoutItem>
+                                                    <MenuFlyoutItem Text="Copy URL" Command="{Binding CopyUrlCommand, Source={local:ChatViewModel}}" CommandParameter="{Binding Payload}" IsEnabled="{Binding ContainsUrl}">
+                                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                                            <KeyboardAccelerator Modifiers="Ctrl,Shift" Key="C" />
+                                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                                    </MenuFlyoutItem>
+                                                </MenuFlyout>
+                                            </FlyoutBase.ContextFlyout>
+                                        </Label>
+                                        <Label Text="{Binding TimeReceived, StringFormat='{0:t}'}"
+                                               FontSize="10"
+                                               HorizontalOptions="End"
+                                               TextColor="{AppThemeBinding Light=#999999, Dark=#777777}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.Me}">
+                                                    <Setter Property="TextColor" Value="#B3FFFFFF" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Type}" Value="{x:Static shared:MessageTypeEnum.NotMe}">
+                                                    <Setter Property="ToolTipProperties.Text" Value="{Binding TimeSent, StringFormat='Sent: {0:G}', Mode=OneWay}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </Grid>
+                    </DataTemplate>
+                </sf:SfListView.ItemTemplate>
+            </sf:SfListView>
+
+            <!-- Loading overlay (shown during initial connection) -->
+            <Grid IsVisible="False"
+                  BackgroundColor="{AppThemeBinding Light=#E6FFFFFF, Dark=#E61A1A2E}"
+                  ZIndex="999">
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connecting}">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Grid.Triggers>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="16">
+                    <ActivityIndicator IsRunning="True"
+                                       HeightRequest="48" WidthRequest="48"
+                                       Color="{StaticResource Primary}" />
+                    <Label Text="Connecting..."
+                           FontSize="16"
+                           HorizontalTextAlignment="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                </VerticalStackLayout>
+            </Grid>
         </Grid>
-        <StackLayout Grid.Row="3" Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="20,0,20,20">
-            <Editor x:Name="MessageEditor" Placeholder="Enter your message" MinimumHeightRequest="120" AutoSize="TextChanges" HorizontalOptions="FillAndExpand" Margin="0,0,8,0">
-                <Editor.Triggers>
-                    <DataTrigger TargetType="Editor" Binding="{Binding IsChecked, Source={x:Reference checkBox}}" Value="true">
-                        <Setter Property="IsVisible" Value="True" />
-                        <Setter Property="Text" Value="{Binding Text, Source={x:Reference MessageEntry}}" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Editor" Binding="{Binding IsChecked, Source={x:Reference checkBox}}" Value="False">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                </Editor.Triggers>
-            </Editor>
-            <Entry x:Name="MessageEntry" Placeholder="Enter your message" HorizontalOptions="FillAndExpand" Margin="0,0,8,0">
-                <Entry.Triggers>
-                    <DataTrigger TargetType="Entry" Binding="{Binding IsChecked, Source={x:Reference checkBox}}" Value="true">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Entry" Binding="{Binding IsChecked, Source={x:Reference checkBox}}" Value="False">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </Entry.Triggers>
-            </Entry>
-            <Button Text=">" Clicked="SendButton_Clicked">
-                <Button.Style>
-                    <Style TargetType="Button">
-                        <Setter Property="IsEnabled" Value="False" />
-                        <Style.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connected}">
-                                <Setter Property="IsEnabled" Value="True" />
+
+        <!-- Row 2: Connected status indicator (hidden when not connected) -->
+        <Grid Grid.Row="2" Padding="16,4" IsVisible="False">
+            <Grid.Triggers>
+                <DataTrigger TargetType="Grid" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connected}">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </Grid.Triggers>
+            <HorizontalStackLayout HorizontalOptions="End" Spacing="6">
+                <Ellipse Fill="{StaticResource Tertiary}"
+                         WidthRequest="8" HeightRequest="8"
+                         VerticalOptions="Center" />
+                <Label Text="Connected"
+                       FontSize="11"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                       VerticalTextAlignment="Center" />
+            </HorizontalStackLayout>
+        </Grid>
+
+        <!-- Row 3: Modern input area -->
+        <Border Grid.Row="3"
+                Margin="12,0,12,12"
+                Padding="6"
+                BackgroundColor="{AppThemeBinding Light=White, Dark=#2D2D30}"
+                StrokeShape="RoundRectangle 24"
+                Stroke="{AppThemeBinding Light={StaticResource InputBorder}, Dark={StaticResource InputBorderDark}}"
+                StrokeThickness="1.5">
+            <Border.Shadow>
+                <Shadow Brush="#10000000" Offset="0,-2" Radius="8" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+
+                <!-- Multiline toggle -->
+                <Border Grid.Column="0"
+                        WidthRequest="36" HeightRequest="36"
+                        StrokeShape="RoundRectangle 18"
+                        Stroke="Transparent"
+                        BackgroundColor="Transparent"
+                        Margin="2,0,4,0"
+                        ToolTipProperties.Text="Toggle multiline">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnMultilineToggled" />
+                    </Border.GestureRecognizers>
+                    <Label Text="⊟"
+                           FontSize="20"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsMultiline}" Value="True">
+                                <Setter Property="Text" Value="⊞" />
+                                <Setter Property="TextColor" Value="{StaticResource Primary}" />
                             </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackLayout>
+                        </Label.Triggers>
+                    </Label>
+                </Border>
+
+                <!-- Single-line entry -->
+                <Entry Grid.Column="1"
+                       x:Name="MessageEntry"
+                       Placeholder="Type a message..."
+                       BackgroundColor="Transparent"
+                       FontSize="14"
+                       IsVisible="True">
+                    <Entry.Triggers>
+                        <DataTrigger TargetType="Entry" Binding="{Binding IsMultiline}" Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Entry.Triggers>
+                </Entry>
+
+                <!-- Multi-line editor -->
+                <Editor Grid.Column="1"
+                        x:Name="MessageEditor"
+                        Placeholder="Type a message..."
+                        BackgroundColor="Transparent"
+                        FontSize="14"
+                        AutoSize="TextChanges"
+                        MaximumHeightRequest="120"
+                        MinimumHeightRequest="40"
+                        IsVisible="False">
+                    <Editor.Triggers>
+                        <DataTrigger TargetType="Editor" Binding="{Binding IsMultiline}" Value="True">
+                            <Setter Property="IsVisible" Value="True" />
+                            <Setter Property="Text" Value="{Binding Text, Source={x:Reference MessageEntry}}" />
+                        </DataTrigger>
+                    </Editor.Triggers>
+                </Editor>
+
+                <!-- Send button -->
+                <Button Grid.Column="2"
+                        Text="➤"
+                        WidthRequest="40" HeightRequest="40"
+                        MinimumHeightRequest="40" MinimumWidthRequest="40"
+                        CornerRadius="20"
+                        Padding="0"
+                        Margin="4,0,2,0"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        FontSize="16"
+                        Clicked="SendButton_Clicked">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="{x:Static local:StatusEnum.Connected}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
     </Grid>
 </ContentPage>

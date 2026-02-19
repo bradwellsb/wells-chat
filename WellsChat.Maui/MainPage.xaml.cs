@@ -20,6 +20,8 @@ namespace WellsChat.Maui
         public bool _isPrivate = false;
         public StatusEnum Status { get => _status; set { _status = value; OnPropertyChanged(nameof(Status)); } }
         public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChanged(nameof(StatusText)); } }
+        private bool _isMultiline = false;
+        public bool IsMultiline { get => _isMultiline; set { _isMultiline = value; OnPropertyChanged(nameof(IsMultiline)); } }
         public Command<string> CopyCommand { get; init; }
         public Command<string> CopyUrlCommand { get; init; }
         public ChatViewModel()
@@ -110,11 +112,12 @@ namespace WellsChat.Maui
         }
         private async Task SendMessage()
         {
-            if (vm.Status == StatusEnum.Connected && (!string.IsNullOrWhiteSpace(MessageEntry.Text) || !string.IsNullOrWhiteSpace(MessageEditor.Text)))
+            var messageText = vm.IsMultiline ? MessageEditor.Text : MessageEntry.Text;
+            if (vm.Status == StatusEnum.Connected && !string.IsNullOrWhiteSpace(messageText))
             {
                 MessageDto messageDto = new()
                 {
-                    Payload = (checkBox.IsChecked ? MessageEditor.Text : MessageEntry.Text),
+                    Payload = messageText,
                     SenderEmail = me.Email,
                     SenderDisplayName = me.DisplayName,
                     TimeSent = DateTime.UtcNow.ToString("O")
@@ -535,6 +538,10 @@ namespace WellsChat.Maui
             var toast = Toast.Make(text, duration, fontSize);
             await toast.Show(cancellationTokenSource.Token);
             */
+        }
+        private void OnMultilineToggled(object sender, EventArgs e)
+        {
+            vm.IsMultiline = !vm.IsMultiline;
         }
         private void DeleteMessage(object sender, EventArgs e)
         {

@@ -50,5 +50,18 @@
     <Color x:Key="DarkGray">#A9A9A9</Color>
     <Color x:Key="LightGray">#D3D3D3</Color>
 
+    <!-- Modern Chat Colors -->
+    <Color x:Key="ChatBubbleMe">#00608f</Color>
+    <Color x:Key="ChatBubbleMeDark">#004D73</Color>
+    <Color x:Key="ChatBubbleOther">#F0F0F0</Color>
+    <Color x:Key="ChatBubbleOtherDark">#2D2D30</Color>
+    <Color x:Key="ChatBubbleTextMe">#FFFFFF</Color>
+    <Color x:Key="ChatBubbleTextOther">#1A1A1A</Color>
+    <Color x:Key="ChatBubbleTextOtherDark">#E0E0E0</Color>
+    <Color x:Key="ChatInfoBg">#E8E8E8</Color>
+    <Color x:Key="ChatInfoBgDark">#252526</Color>
+    <Color x:Key="ChatInfoText">#888888</Color>
+    <Color x:Key="InputBorder">#E0E0E0</Color>
+    <Color x:Key="InputBorderDark">#404040</Color>
 
 </ResourceDictionary>
