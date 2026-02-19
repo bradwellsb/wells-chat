@@ -44,7 +44,7 @@ namespace WellsChat.Clientconsole
                         Payload = Console.ReadLine(),
                         SenderEmail = me.Email,
                         SenderDisplayName = me.DisplayName,
-                        TimeSent = DateTime.UtcNow.ToString()
+                        TimeSent = DateTime.UtcNow.ToString("O")
                     };
 
                     if (message.Payload.ToLower() == "exit")

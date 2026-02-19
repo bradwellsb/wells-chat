@@ -117,7 +117,7 @@ namespace WellsChat.Maui
                     Payload = (checkBox.IsChecked ? MessageEditor.Text : MessageEntry.Text),
                     SenderEmail = me.Email,
                     SenderDisplayName = me.DisplayName,
-                    TimeSent = DateTime.UtcNow.ToString()
+                    TimeSent = DateTime.UtcNow.ToString("O")
                 };
                 if (!_commands.Contains(messageDto.Payload.ToLower())) //do not encrypt command messages
                 {

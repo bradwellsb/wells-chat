@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,7 +25,7 @@ namespace WellsChat.Shared
                 SenderEmail = dto.SenderEmail,
                 SenderDisplayName = dto.SenderDisplayName,
                 IV = dto.IV,
-                TimeSent = DateTime.Parse(dto.TimeSent).ToLocalTime(),
+                TimeSent = DateTime.Parse(dto.TimeSent, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToLocalTime(),
                 TimeReceived = DateTime.UtcNow.ToLocalTime()
             };
         }
