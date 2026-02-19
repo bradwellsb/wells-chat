@@ -380,6 +380,7 @@ namespace WellsChat.Maui
                 {
                     options.AccessTokenProvider = () => Task.FromResult(accessToken);
                 })
+                .WithStatefulReconnect()
                 .WithAutomaticReconnect()
                 .Build();
         }

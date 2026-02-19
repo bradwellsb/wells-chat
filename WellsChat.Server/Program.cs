@@ -8,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-    .AddSignalR().AddAzureSignalR();
+    .AddSignalR().AddAzureSignalR(options =>
+    {
+        options.AllowStatefulReconnects = true;
+        options.AccessTokenLifetime = TimeSpan.FromDays(7);
+    });
 builder.Services
     .AddMicrosoftIdentityWebApiAuthentication(builder.Configuration);
 builder.Services
