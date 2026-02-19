@@ -444,6 +444,12 @@ namespace WellsChat.Maui
                 if (isMe) message.Type = MessageTypeEnum.Me;
                 else message.Type = MessageTypeEnum.NotMe;
                 AddMessage(message);
+#if WINDOWS
+                if (!isMe)
+                {
+                    Application.Current?.Dispatcher.Dispatch(Platforms.Windows.WindowsFlashHelper.FlashWindow);
+                }
+#endif
             });
 
             hubConnection.On<MessageDto>("SendSuccess", (messageDto) =>
